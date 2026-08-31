@@ -4,20 +4,20 @@ numeroSenha.textContent = tamanhoSenha;
 const letrasMaiusculas = 'ABCDEFGHIJKLMNOPQRSTUVXYWZ';
 const letrasMinusculas = 'abcdefghijklmnopqrstuvxywz';
 const numeros = '0123456789';
-const simbolos = '!@%*?#¨&+-.';
+const simbolos = '!@%*?';
 const botoes = document.querySelectorAll('.parametro-senha__botao');
 const campoSenha = document.querySelector('#campo-senha');
-const checkbox = document.querySelectorAll('.checkbox');
+const checkbox = document.querySelectorAll('.parametro-senha-checkbox input[type="checkbox"]');
+let alfabeto = '';
 const forcaSenha = document.querySelector('.forca');
-
 
 botoes[0].onclick = diminuiTamanho;
 botoes[1].onclick = aumentaTamanho;
 
+
 function diminuiTamanho(){
     if (tamanhoSenha > 1){
        // tamanhoSenha = tamanhoSenha-1;
-       
         tamanhoSenha--;
     }
     numeroSenha.textContent = tamanhoSenha;
@@ -35,6 +35,10 @@ function aumentaTamanho(){
 
 function geraSenha() {
     let alfabeto = '';
+    if (checkbox.length === 0) {
+        campoSenha.value = '';
+        return;
+    }
     if (checkbox[0].checked) {
         alfabeto = alfabeto + letrasMaiusculas;
     }
@@ -47,26 +51,6 @@ function geraSenha() {
     if (checkbox[3].checked) {
         alfabeto = alfabeto + simbolos;
     }
-    if (alfabeto.length === 0) {
-        campoSenha.value = '';
-        alert('Selecione ao menos um tipo de caractere para gerar a senha.');
-        return;
-    }
-    const entropiaElemento = document.querySelector('.entropia');
-    if (alfabeto.length > 0) {
-        const tamanhoAlfabeto = alfabeto.length;
-        const entropia = tamanhoSenha * Math.log2(tamanhoAlfabeto);
-        const tentativasPorSegundo = 100e6; // 100 milhões de tentativas por segundo
-        const segundosPorDia = 60 * 60 * 24;
-        const dias = Math.floor(Math.pow(2, entropia) / (tentativasPorSegundo * segundosPorDia));
-        if (!Number.isFinite(dias) || dias > 1e12) {
-            entropiaElemento.textContent = 'Um computador pode levar mais de 1.000.000.000.000 dias';
-        } else {
-            entropiaElemento.textContent = 'Um computador pode levar até ' + dias + ' dias para descobrir essa senha.';
-        }
-    } else {
-        entropiaElemento.textContent = '';
-    }
     let senha = '';
     for (let i = 0; i < tamanhoSenha; i++) {
         let numeroAleatorio = Math.random() * alfabeto.length;
@@ -76,18 +60,19 @@ function geraSenha() {
     campoSenha.value = senha;
     classificaSenha();
 }
-const valorEntropia = document.querySelector('.entropia');
-valorEntropia.textContent = 2**Math.floor(entropia)/(100e6*60*60*24);
 
-function classificaSenha(tamanhoAlfabeto){
-    let entropia = tamanhoSenha * Math.log2(tamanhoSenha);
-    console.log(entropia);
+function classificaSenha(){
     forcaSenha.classList.remove('fraca','media','forte');
-    if (entropia > 57){
+    if (tamanhoSenha > 11){
         forcaSenha.classList.add('forte');
-    } else if (entropia > 35 && entropia < 57) {
+    } else if (tamanhoSenha > 5 && tamanhoSenha < 12 ) {
         forcaSenha.classList.add('media');
-    } else if (entropia <= 35){
+    } else if (tamanhoSenha <= 5){
         forcaSenha.classList.add('fraca');
     }
 }
+
+
+console.log(botoes)
+
+
